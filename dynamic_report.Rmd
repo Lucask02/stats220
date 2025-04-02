@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
 
 ```
 
-## Types of commuting transportation by age (header 2)
+## Types of commuting transportation by age 
 
 The relationship between the type of commuting transportation and the age of respondents
 
@@ -24,77 +24,104 @@ logged_data <- read_csv(paste0("https://docs.google.com/spreadsheets",
 
 latest_data <- rename(logged_data)
 
-glimpse(latest_data)
 
-a <- tibble(commuting = latest_data$`Do you use trasportation for commuting?`, age = latest_data$`What is your age?`)
 
-b <- tibble(transporation_type = latest_data$`What is your type of trasportation for commuting`, 
+a <- tibble(commuting = latest_data$`Do you use transportation for commuting?`, age = latest_data$`What is your age?`)
+transporation_type = latest_data$`What is your type of transportation for commuting`
+c <- tibble(transporation_type = latest_data$`What is your type of trasportation for commuting`, 
 age = latest_data$`What is your age?`)
-glimpse(b)
+
 
 #Calculating the total number of respondents
 num_people <- length(latest_data$`What is your age?`)
 
 #Calculating the total number of respondents, excluding no commuters
 
+total <- paste("The total number of respondents is", num_people, "people")
 
-paste("The total number of respondents is", num_people, "people")
+# Calculate the mean of the binary variable
+num_commuter <- mean(latest_data$`What is your type of transportation for commuting`, na.rm = TRUE)
+
+#Setting up a variable for commuting status of respondents
+commuting = latest_data$`Do you use transportation for commuting?`
+
+#Creating a bar chart between the number of respondents and the commuting status
+
+a <- ggplot(latest_data, aes(x = commuting, fill = commuting)) +
+  geom_bar(start = 'identity') +
+  labs(title = "The number of commuters",
+       subtitle = "Apprehending the number of commuters of my data",
+       caption = "Source: Google form survery by Lucas Kang",
+       x = "Commuting status",
+       y = "The number of commuters") +
+#Classifying the colour of each bars (Red and )
+
+  scale_fill_manual(values = c("No commuting" = "red",
+                               "Yes" = '#33ddff'))
+a
+glimpse(latest_data)
+```
+`r total`. 
+
+#`r num_commuter`
+
+
+The relationship between the type of commuting transportation and the age of respondents
+```{r}
+# Setting up a variable for transportation types
+transporation_type = latest_data$`What is your type of transportation for commuting`
+
+#
+
+b <- ggplot(latest_data, aes(x = transporation_type, fill = transporation_type)) +
+  geom_bar(start = 'identity') +
+  labs(title = "Number of Respondents for Each Transportation Type",
+       subtitle = "Comparing transportaion types for commuters",
+       caption = "Source: Google form survery by Lucas Kang",
+       x = "Transportaion types",
+       y = "Number of commuters") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("Bus" = "red",
+                               "Car (including Uber or taxi)" = 'yellow', "Motocycle" = 'green', "Walking" = 'blue'
+                               ))
+b
+transportation_counts <- latest_data %>%
+  group_by(`What is your type of transportation for commuting`) %>%
+  summarise(count = n())
+
+
+```
+
+
+The relationship between the type of commuting transportation and the age of respondents
+```{r}
 
 #Calculating the average age of respondents of my data
 average_age <- (sum(latest_data$`What is your age?`) / num_people) %>% round
 
-(latest_data$`What is your age?`) %>% mean()
+(latest_data$`What is your type of trasportation for commuting`) %>% mean()
 
-#num_commuter <- latest_data$`What is your age?` %>% 
-#  length(na.rm = TRUE)
-#latest_data$binary_commute <- ifelse(
-#  latest_data$`Do you use transportation for commuting?` == "Yes", 1,
-#  ifelse(latest_data$`Do you use transportation for commuting?` == "No", 0, NA))
-
-
-# Calculate the mean of the binary variable
-num_commuter <- mean(latest_data$binary_commute, na.rm = TRUE)
-
-paste("The average age of respondents is", average_age)
+average <- paste("The average age of respondents is", average_age)
 
 #Calculating the maximum and minimum age value 
-min(latest_data$`what is your age?`)
-max(latest_data$`what is your age?`)
-
-#Creating a bar chart between the number of respondents and the commuting status
-
-a %>%
-  ggplot() +
-  geom_bar(aes(x = commuting), fill = '#33ddff') +
-  labs(title = "The number of commuters",
-       subtitle = "demonstrating of commuting status",
-       caption = "Source: Google form survery by Lucas Kang",
-       x = "Commuting status",
-       y = "The number of commuter")
+min_age <- min(latest_data$`What is your age?`, na.rm = TRUE)
+max_age <- max(latest_data$`What is your age?`, na.rm = TRUE)
 
 
-
-
-a
-
-
-
-```
-
-
-```{r}
 #Creating a bar chart between respondents' age and 
 #the type of transportation for commuting
 
-b %>%
+c %>%
   ggplot() +
   geom_bar(aes(x = age, fill = transporation_type)) +
-  labs(title = "Transportaion type for commuting by age",
-       subtitle = "Comparing transportaion type and age for commuters",
+  labs(title = "Transportaion types for commuting by age",
+       subtitle = "Comparing transportaion types and age for commuters",
        caption = "Source: Google form survery by Lucas Kang",
        x = "Age (New Zealand Legal age)",
-       y = "Type of transportation")
+       y = "Transportation types") +
+  scale_fill_manual(values = c("Bus" = "red",
+                               "Car (including Uber or taxi)" = 'yellow', "Motocycle" = 'green', "Walking" = 'blue'
+                               ))
 
-b
 ```
-The total number of respondents is `r num_people` and the number of commuters is `num_commuter`. 
+The average age of the commuters in my data is `r average_age` including the maximum age value of `r max_age` and the minimum age value of `r min_age`.
